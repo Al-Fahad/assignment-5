@@ -56,8 +56,8 @@ jobs:
       - name: Deploy Application
         run: |
           echo "🚀 Deploying application..."
-          pm2 stop ostad-app || true
-          pm2 start src/server.js --name ostad-app
+          pm2 stop app || true
+          pm2 start src/server.js --name app
           pm2 save
 
 
