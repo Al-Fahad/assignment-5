@@ -30,9 +30,7 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: |
-          install npm
-          npm ci
+        run: npm ci
 
       - name: Run npm audit (non-blocking)
         run: | 
