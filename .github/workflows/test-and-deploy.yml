@@ -35,7 +35,6 @@ jobs:
     name: Deploy to Self-Hosted runner
     needs: test
     runs-on: self-hosted
-    labels: [linux]
 
     steps:
       - name: Checkout code
