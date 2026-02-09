@@ -1,0 +1,76 @@
+name: CI/CD Pipline
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: self-hosted
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/knows_hosts
+
+      - name: Test EC2 Connectivity
+        run: |
+          echo "Testing SSH connection to EC2 Instance..."
+          ssh -i ~/.ssh/ec2_key -o ConnectTimeout=10 ${{ secrets.EC2_USER }}@${{secrets.EC2_HOST}} "echo 'SSH Connection Successful!'"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests and capture results
+        run: |
+          npm test | tee test-results.txt
+      
+      - name: Upload test results artifect
+        uses: actions/upload-artifact@v4
+        with:
+          name: mocha-test-results
+          path: test-results.txt
+
+  deploy:
+    name: Deploy to Self-Hosted runner
+    needs: test
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      
+
+      - name: Download test results artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mocha-test-results
+        
+      - name: Display test Results
+        run: |
+          echo "📄 Test Results:"
+          cat test-results.txt
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Deploy Application
+        run: |
+          echo "🚀 Deploying application..."
+          pm2 stop app || true
+          pm2 start src/server.js --name app
+
+
+        
