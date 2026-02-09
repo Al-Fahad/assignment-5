@@ -31,7 +31,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt install npm
+          install npm
           npm ci
 
       - name: Run npm audit (non-blocking)
