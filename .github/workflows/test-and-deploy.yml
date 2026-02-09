@@ -23,7 +23,7 @@ jobs:
 
       - name: Run tests and capture results
         run: |
-          npm test | test-results.txt
+          npm test > test-results.txt 2>&1
       
       - name: Upload test results artifect
         uses: actions/upload-artifact@v4
