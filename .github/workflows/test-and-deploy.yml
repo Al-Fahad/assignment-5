@@ -22,7 +22,7 @@ jobs:
       - name: Test EC2 Connectivity
         run: |
           echo "Testing SSH connection to EC2 Instance..."
-          ssh -i ~/.ssh/ec2_key -o ConnectTimeout=10 ${{ secrets.EC2_USER }}@${{secrets.EC2_HOST}} "echo 'SSH Connection Successful!'"
+          ssh -i ~/.ssh/ec2_key ${{ secrets.EC2_USER }}@${{secrets.EC2_HOST}} "echo 'SSH Connection Successful!'"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
